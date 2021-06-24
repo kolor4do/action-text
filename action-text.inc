@@ -13,7 +13,7 @@
 #include <YSI_Coding\y_hooks>
 
 
-forward ShowActionText(playerid, const message[], time=0, width=200);
+forward ShowActionText(playerid, const message[], time=0, width=200, color = -1);
 /*
 # Description
 Display a small message in the center of the player's screen.
@@ -57,7 +57,7 @@ hook OnFilterScriptExit() {
 #endif
 
 _actionText_CreateUI(playerid) {
-	actionTextUI[playerid] = CreatePlayerTextDraw(playerid, 320.000000, 320.000000, "_");
+	actionTextUI[playerid] = CreatePlayerTextDraw(playerid, 320.000000, 361.000000, "_");
 	PlayerTextDrawAlignment(playerid, actionTextUI[playerid], 2);
 	PlayerTextDrawBackgroundColor(playerid, actionTextUI[playerid], 255);
 	PlayerTextDrawFont(playerid, actionTextUI[playerid], 1);
@@ -73,13 +73,14 @@ _actionText_DeleteUI(playerid, doTD = false) {
 	}
 }
 
-stock ShowActionText(playerid, const message[], time=0, width=200) {
+stock ShowActionText(playerid, const message[], time=0, width=200, color = -1) {
 	if(!IsPlayerConnected(playerid)) {
 		return 1;
 	}
 
 	PlayerTextDrawSetString(playerid, actionTextUI[playerid], message);
 	PlayerTextDrawTextSize(playerid, actionTextUI[playerid], width, 300);
+	PlayerTextDrawColor(playerid, actionTextUI[playerid], color);
 	PlayerTextDrawShow(playerid, actionTextUI[playerid]);
 
 	viewingActionText[playerid] = true;
