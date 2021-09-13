@@ -1,117 +1,94 @@
-// built-in include guard removal
-// just in case the user has a local dependency with the same file name
-#if defined _inc_action_text
-	#undef _inc_action_text
-#endif
-// custom include-guard to ensure we don't duplicate
-#if defined _action_text_included
+#if defined action_text_included
 	#endinput
 #endif
-#define _action_text_included
+#define action_text_included
+
+/*
+	Functions:
+
+		ShowActionText(playerid, const message[], time = 2000, color = -1);
+        HideActionText(playerid);
+        IsPlayerViewingActionText(playerid);
+*/
 
 #include <a_samp>
-#include <YSI_Coding\y_hooks>
-
-
-forward ShowActionText(playerid, const message[], time=0, width=200, color = -1);
-/*
-# Description
-Display a small message in the center of the player's screen.
-*/
-
-forward HideActionText(playerid);
-/*
-# Description
-Hide the message displayed by ShowActionText.
-*/
-
 
 static
-	PlayerText:actionTextUI[MAX_PLAYERS],
-	bool:viewingActionText[MAX_PLAYERS],
-	hideTimer[MAX_PLAYERS];
+PlayerText: act_Textdraw[MAX_PLAYERS],
+bool:       act_Viewing[MAX_PLAYERS],
+            act_Timer[MAX_PLAYERS];
 
-forward _actionText_Hide(playerid);
-
-hook OnPlayerConnect(playerid) {
-	_actionText_CreateUI(playerid);
+public OnPlayerConnect(playerid)
+{
+	act_Textdraw[playerid] = CreatePlayerTextDraw(playerid, 320.000000, 320.000000, "_");
+    PlayerTextDrawFont              (playerid, act_Textdraw[playerid], 1);
+    PlayerTextDrawLetterSize        (playerid, act_Textdraw[playerid], 0.500000, 2.000000);
+    PlayerTextDrawTextSize          (playerid, act_Textdraw[playerid], 160.000000, 480.000000);
+    PlayerTextDrawSetOutline        (playerid, act_Textdraw[playerid], 1);
+    PlayerTextDrawSetShadow         (playerid, act_Textdraw[playerid], 1);
+    PlayerTextDrawAlignment         (playerid, act_Textdraw[playerid], 2);
+    PlayerTextDrawColor             (playerid, act_Textdraw[playerid], -1);
+    PlayerTextDrawBackgroundColor   (playerid, act_Textdraw[playerid], 127);
+    PlayerTextDrawBoxColor          (playerid, act_Textdraw[playerid], 0);
+    PlayerTextDrawUseBox            (playerid, act_Textdraw[playerid], 0);
+    PlayerTextDrawSetProportional   (playerid, act_Textdraw[playerid], 1);
+    PlayerTextDrawSetSelectable     (playerid, act_Textdraw[playerid], 0);
+    act_Viewing[playerid] = false;
+	#if defined act_OnPlayerConnect
+		return act_OnPlayerConnect(playerid);
+	#else
+		return 1;
+	#endif
 }
-
-hook OnPlayerDisconnect(playerid) {
-	_actionText_DeleteUI(playerid);
-}
-
-#if defined FILTERSCRIPT
-hook OnFilterScriptInit() {
-	for(new i; i < MAX_PLAYERS; i++) {
-		if(IsPlayerConnected(i))
-			_actionText_CreateUI(i);
-	}
-}
-hook OnFilterScriptExit() {
-	for(new i; i < MAX_PLAYERS; i++) {
-		if(IsPlayerConnected(i))
-			_actionText_DeleteUI(i, true);
-	}
-}
+#if defined _ALS_OnPlayerConnect
+	#undef OnPlayerConnect
+#else
+	#define _ALS_OnPlayerConnect
+#endif
+#define OnPlayerConnect act_OnPlayerConnect
+#if defined act_OnPlayerConnect
+	forward act_OnPlayerConnect(playerid);
 #endif
 
-_actionText_CreateUI(playerid) {
-	actionTextUI[playerid] = CreatePlayerTextDraw(playerid, 320.000000, 361.000000, "_");
-	PlayerTextDrawAlignment(playerid, actionTextUI[playerid], 2);
-	PlayerTextDrawBackgroundColor(playerid, actionTextUI[playerid], 255);
-	PlayerTextDrawFont(playerid, actionTextUI[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, actionTextUI[playerid], 0.300000, 1.499999);
-	PlayerTextDrawColor(playerid, actionTextUI[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, actionTextUI[playerid], 1);
-}
-
-_actionText_DeleteUI(playerid, doTD = false) {
-	if(doTD) {
-		PlayerTextDrawHide(playerid, actionTextUI[playerid]);
-		PlayerTextDrawDestroy(playerid, actionTextUI[playerid]);
-	}
-}
-
-stock ShowActionText(playerid, const message[], time=0, width=200, color = -1) {
-	if(!IsPlayerConnected(playerid)) {
+public OnPlayerDisconnect(playerid, reason)
+{
+    PlayerTextDrawDestroy(playerid, act_Textdraw[playerid]);
+    #if defined act_OnPlayerDisconnect
+		return act_OnPlayerDisconnect(playerid, reason);
+	#else
 		return 1;
-	}
+	#endif
+}
+#if defined _ALS_OnPlayerDisconnect
+	#undef OnPlayerDisconnect
+#else
+	#define _ALS_OnPlayerDisconnect
+#endif
+#define OnPlayerDisconnect act_OnPlayerDisconnect
+#if defined act_OnPlayerDisconnect
+	forward act_OnPlayerDisconnect(playerid, reason);
+#endif
 
-	PlayerTextDrawSetString(playerid, actionTextUI[playerid], message);
-	PlayerTextDrawTextSize(playerid, actionTextUI[playerid], width, 300);
-	PlayerTextDrawColor(playerid, actionTextUI[playerid], color);
-	PlayerTextDrawShow(playerid, actionTextUI[playerid]);
+stock ShowActionText(playerid, const message[], time = 2000, color = -1)
+{
+    KillTimer(act_Timer[playerid]);
+    act_Timer[playerid] = SetTimerEx("HideActionText", time, false, "d", playerid);
+    PlayerTextDrawSetString         (playerid, act_Textdraw[playerid], message);
+    PlayerTextDrawColor             (playerid, act_Textdraw[playerid], color);
+    PlayerTextDrawShow              (playerid, act_Textdraw[playerid]);
+    act_Viewing[playerid] = true;
 
-	viewingActionText[playerid] = true;
-
-	if(time != 0) {
-		KillTimer(hideTimer[playerid]);
-		hideTimer[playerid] = SetTimerEx("_actionText_Hide", time, false, "d", playerid);
-	}
-
-	return 0;
+    return 1;
 }
 
-public _actionText_Hide(playerid) {
-	if(!IsPlayerConnected(playerid)) {
-		return;
-	}
-
-	HideActionText(playerid);
-
-	return;
-}
-
-stock HideActionText(playerid) {
-	if(!IsPlayerConnected(playerid)) {
-		return 1;
-	}
-
-	PlayerTextDrawHide(playerid, actionTextUI[playerid]);
-	viewingActionText[playerid] = false;
-
-	return 0;
+forward HideActionText(playerid);
+public HideActionText(playerid)
+{
+    if(IsPlayerConnected(playerid))
+    {
+        PlayerTextDrawHide(playerid, act_Textdraw[playerid]);
+        act_Viewing[playerid] = false;
+    }
 }
 
 stock bool:IsPlayerViewingActionText(playerid) {
@@ -119,5 +96,5 @@ stock bool:IsPlayerViewingActionText(playerid) {
 		return false;
 	}
 
-	return viewingActionText[playerid];
+	return act_Viewing[playerid];
 }
