@@ -1,6 +1,12 @@
+  
 {
-    "entry": "test.pwn",
-    "output": "test.amx",
-    "dependencies": ["sampctl/samp-stdlib", "pawn-lang/YSI-Includes"],
-    "dev_dependencies": ["ScavengeSurvive/test-boilerplate"]
+	"user": "kolor4do",
+	"repo": "action-text",
+	"build":
+	{
+		"compiler":
+		{
+			"version": "3.10.10"
+		}
+	}
 }
