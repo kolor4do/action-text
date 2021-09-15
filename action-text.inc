@@ -9,7 +9,7 @@
 /*
 	Functions:
 
-		ShowActionText(playerid, const message[], time = 3000, width = 160, color = -1, sound = 0);
+	ShowActionText(playerid, const message[], time = 3000, width = 160, color = -1, sound = 0);
         HideActionText(playerid);
         IsPlayerViewingActionText(playerid);
 */
@@ -71,7 +71,7 @@ bool:       act_Viewing[MAX_PLAYERS],
 
 public OnPlayerConnect(playerid)
 {
-	act_Textdraw[playerid] = CreatePlayerTextDraw(playerid, 320.000000, ACTION_TEXT_HEIGHT, "action text by kolor4do");
+    act_Textdraw[playerid] = CreatePlayerTextDraw(playerid, 320.000000, ACTION_TEXT_HEIGHT, "action text by kolor4do");
     PlayerTextDrawFont              (playerid, act_Textdraw[playerid], 1);
     PlayerTextDrawLetterSize        (playerid, act_Textdraw[playerid], 0.500000, 2.000000);
     PlayerTextDrawTextSize          (playerid, act_Textdraw[playerid], 160.000000, 480.000000);
@@ -85,11 +85,11 @@ public OnPlayerConnect(playerid)
     PlayerTextDrawSetProportional   (playerid, act_Textdraw[playerid], 1);
     PlayerTextDrawSetSelectable     (playerid, act_Textdraw[playerid], 0);
     act_Viewing[playerid] = false;
-	#if defined act_OnPlayerConnect
-		return act_OnPlayerConnect(playerid);
-	#else
-		return 1;
-	#endif
+    #if defined act_OnPlayerConnect
+	return act_OnPlayerConnect(playerid);
+    #else
+	return 1;
+    #endif
 }
 #if defined _ALS_OnPlayerConnect
 	#undef OnPlayerConnect
@@ -105,10 +105,10 @@ public OnPlayerDisconnect(playerid, reason)
 {
     PlayerTextDrawDestroy(playerid, act_Textdraw[playerid]);
     #if defined act_OnPlayerDisconnect
-		return act_OnPlayerDisconnect(playerid, reason);
-	#else
-		return 1;
-	#endif
+	return act_OnPlayerDisconnect(playerid, reason);
+    #else
+	return 1;
+    #endif
 }
 #if defined _ALS_OnPlayerDisconnect
 	#undef OnPlayerDisconnect
