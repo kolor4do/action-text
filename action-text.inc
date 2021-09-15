@@ -1,7 +1,10 @@
-#if defined action_text_included
+#if defined _inc_action_text
+	#undef _inc_action_text
+#endif
+#if defined _action_text_included
 	#endinput
 #endif
-#define action_text_included
+#define _action_text_included
 
 /*
 	Functions:
