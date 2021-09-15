@@ -20,6 +20,10 @@
 	#define ACTION_TEXT_HEIGHT    320.000000
 #endif
 
+#if !defined ACTION_TEXT_SCALE
+	#define ACTION_TEXT_SCALE    0.4
+#endif
+
 static
 PlayerText: act_Textdraw[MAX_PLAYERS],
 bool:       act_Viewing[MAX_PLAYERS],
@@ -73,7 +77,7 @@ public OnPlayerConnect(playerid)
 {
     act_Textdraw[playerid] = CreatePlayerTextDraw(playerid, 320.000000, ACTION_TEXT_HEIGHT, "action text by kolor4do");
     PlayerTextDrawFont              (playerid, act_Textdraw[playerid], 1);
-    PlayerTextDrawLetterSize        (playerid, act_Textdraw[playerid], 0.500000, 2.000000);
+    PlayerTextDrawLetterSize        (playerid, act_Textdraw[playerid], ACTION_TEXT_SCALE, ACTION_TEXT_SCALE * 4);
     PlayerTextDrawTextSize          (playerid, act_Textdraw[playerid], 160.000000, 480.000000);
     PlayerTextDrawSetOutline        (playerid, act_Textdraw[playerid], 1);
     PlayerTextDrawSetShadow         (playerid, act_Textdraw[playerid], 1);
