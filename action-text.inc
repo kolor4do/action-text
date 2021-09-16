@@ -9,7 +9,7 @@
 /*
 	Functions:
 
-	ShowActionText(playerid, const message[], time = 3000, width = 160, color = -1, sound = 0);
+	ShowActionText(playerid, message[], time = 3000, width = 160, color = -1, sound = 0);
         HideActionText(playerid);
         IsPlayerViewingActionText(playerid);
 */
@@ -124,7 +124,7 @@ public OnPlayerDisconnect(playerid, reason)
 	forward act_OnPlayerDisconnect(playerid, reason);
 #endif
 
-stock ShowActionText(playerid, const message[], time = 3000, width = 160, color = -1, sound = 0)
+stock ShowActionText(playerid, message[], time = 3000, width = 160, color = -1, sound = 0)
 {
     KillTimer(act_Timer[playerid]);
     act_Timer[playerid] = SetTimerEx("HideActionText", time, false, "d", playerid);
